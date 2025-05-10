@@ -1,17 +1,13 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchPropertiesThunk } from "../state/propertySlice";
-
-import Box from "@mui/material/Box";
-import Card from "@mui/material/Card";
-import CardActions from "@mui/material/CardActions";
-import CardContent from "@mui/material/CardContent";
-import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
+import TitleComponent from "../../../shared/components/panelPrincipal";
+import { InputText } from "primereact/inputtext";
+import { Card } from "primereact/card";
 
 const PropertyList = () => {
   const dispatch = useDispatch();
-  const { items, loading, error } = useSelector((state) => state.properties);
+  const { loading, error } = useSelector((state) => state.properties);
 
   useEffect(() => {
     dispatch(fetchPropertiesThunk());
@@ -19,44 +15,57 @@ const PropertyList = () => {
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
-
+  const newProduct = () => {
+    alert("Hoka");
+  };
   return (
     <>
-      {/* <div className="grid">
-        {items.map((p) => (
-          // <div key={p.name} className="card">
-          //   <h3>{p.name}</h3>
-          //   <p>{p.address}</p>
-          //   <p><b>${p.price.toLocaleString()}</b></p>
-          // </div>
+      <TitleComponent
+        titlePrimary="Dashboard Propieadades"
+        titleSecondary="Podrá consultar, visualizar y administrar todas las propiedades registradas en el sistema."
+        newData={newProduct}
+      ></TitleComponent>
+      <Card
+        title="Formulario de búsqueda"
+        subTitle="Diligencie el grupo de parámetros que considere para consultar las propiedades de su interés."
+      >
+        <div class="flex">
+          <div className="flex flex-column m-2">
+            <label htmlFor="username">Propietario</label>
+            <InputText id="username" aria-describedby="username-help" />
+          </div>
+          <div className="flex flex-column m-2">
+            <label htmlFor="username">Nombre de la propiedad</label>
+            <InputText id="username" aria-describedby="username-help" />
+          </div>
+          <div className="flex flex-column m-2">
+            <label htmlFor="username">Direción de la propiedad</label>
+            <InputText id="username" aria-describedby="username-help" />
+          </div>
+          <div className="flex flex-column m-2">
+            <label htmlFor="username">Precio</label>
+            <InputText id="username" aria-describedby="username-help" />
+          </div>
+        </div>        
+      </Card>
+      <br></br>
+      <Card        
+        subTitle="Resultados de la búsqueda."
+      >
 
-          <React.Fragment key={p.name}>
-            <CardContent>
-              <Typography
-                gutterBottom
-                sx={{ color: "text.secondary", fontSize: 14 }}
-              >
-                Word of the Day
-              </Typography>
-              <Typography variant="h5" component="div">
-                {p.name}
-              </Typography>
-              <Typography sx={{ color: "text.secondary", mb: 1.5 }}>
-                adjective
-              </Typography>
-              <Typography variant="body2">
-                well meaning and kindly.
-                <br />
-                {'"a benevolent smile"'}
-              </Typography>
-            </CardContent>
-            <CardActions>
-              <Button size="small">Learn More</Button>
-            </CardActions>
-          </React.Fragment>
-        ))}
-      </div> */}
+      </Card>
     </>
+
+    // <div className="grid">
+    //   {items.map((p) => (
+    //     <div key={p.name} className="card">
+    //       <h3>{p.name}</h3>
+    //       <p>{p.address}</p>
+    //       <p><b>${p.price.toLocaleString()}</b></p>
+    //     </div>
+
+    //   ))}
+    // </div>
   );
 };
 

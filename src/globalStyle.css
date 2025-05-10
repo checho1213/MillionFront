@@ -1,0 +1,21 @@
+.p-inputtext:enabled:focus {
+    outline: 0 none;
+    outline-offset: 0;
+    box-shadow: 0 0 0 0 !important;
+    border-color: #3f0099;
+}
+.p-inputtext:enabled:hover {
+    outline: 0 none;
+    outline-offset: 0;
+    box-shadow: 0 0 0 0 !important;
+    border-color: #3f0099;
+}
+.p-inputtext {
+    border-radius: 0px !important;    
+}
+.p-card-title {
+    color: #ff6a13 !important;
+}
+.p-card {
+    box-shadow: 0 3px 9px #00000029;
+}
