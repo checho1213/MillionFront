@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchPropertiesThunk } from "../state/propertySlice";
+import { fetchPropertiesThunk, fetchFilteredPropertiesThunk } from "../state/propertySlice";
 import TitleComponent from "../../../shared/components/panelPrincipal";
 
 import { FilterMatchMode, FilterOperator } from "primereact/api";
@@ -11,6 +11,7 @@ import { IconField } from "primereact/iconfield";
 import { InputIcon } from "primereact/inputicon";
 import { Button } from "primereact/button";
 import { Card } from "primereact/card";
+import { InputNumber } from 'primereact/inputnumber';
 
 const PropertyList = () => {
   const dispatch = useDispatch();
@@ -23,6 +24,13 @@ const PropertyList = () => {
     dispatch(fetchPropertiesThunk());
     initFilters();
   }, [dispatch]);
+
+    const [filtersPanel, setFiltersPanel] = useState({
+    owner: "",
+    name: "",
+    address: "",
+    maxPrice: "",
+  });
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
@@ -44,6 +52,7 @@ const PropertyList = () => {
     });
     setGlobalFilterValue("");
   };
+  
 
   const balanceBodyTemplate = (rowData) => {
     return formatCurrency(rowData.price);
@@ -57,6 +66,31 @@ const PropertyList = () => {
         })
       : 0;
   };
+
+const handleChange = (e) => {
+    const { id, value } = e.target? e.target : e.value;    
+    setFiltersPanel((prev) => ({ ...prev, [id]: value }));
+  };
+
+  
+
+   const handleSearch = () => {
+    dispatch(fetchFilteredProperties(filtersPanel));
+  };
+
+  const clearFiltersPanel = () => {
+    setFiltersPanel({
+      owner: "",
+      name: "",
+      address: "",
+      maxPrice: "",
+    });
+    dispatch(fetchFilteredProperties({})); // recarga sin filtros
+  };
+
+  const fetchFilteredProperties = async (filters) => {    
+  dispatch(fetchFilteredPropertiesThunk(filters));
+};
 
   const clearFilter = () => {
     initFilters();
@@ -98,7 +132,7 @@ const PropertyList = () => {
   return (
     <>
       <TitleComponent
-        titlePrimary="Dashboard Propieadades"
+        titlePrimary="Dashboard Propiedades"
         titleSecondary="Podrá consultar, visualizar y administrar todas las propiedades registradas en el sistema."
         newData={newProduct}
       ></TitleComponent>
@@ -110,25 +144,25 @@ const PropertyList = () => {
           <div className="col-12 md:col-6 lg:col-3">
             <div className="flex flex-column gap-2 m-2">
               <label htmlFor="owner">Propietario</label>
-              <InputText id="owner" aria-describedby="owner-help" />
+              <InputText id="owner" aria-describedby="owner-help" value={filtersPanel.owner} onChange={handleChange} />
             </div>
           </div>
           <div className="col-12 md:col-6 lg:col-3">
             <div className="flex flex-column gap-2 m-2">
               <label htmlFor="name">Nombre de la propiedad</label>
-              <InputText id="name" aria-describedby="name-help" />
+              <InputText id="name" aria-describedby="name-help" value={filtersPanel.name} onChange={handleChange} />
             </div>
           </div>
           <div className="col-12 md:col-6 lg:col-3">
             <div className="flex flex-column gap-2 m-2">
               <label htmlFor="address">Dirección de la propiedad</label>
-              <InputText id="address" aria-describedby="address-help" />
+              <InputText id="address" aria-describedby="address-help" value={filtersPanel.address} onChange={handleChange} />
             </div>
           </div>
           <div className="col-12 md:col-6 lg:col-3">
             <div className="flex flex-column gap-2 m-2">
-              <label htmlFor="price">Precio</label>
-              <InputText id="price" aria-describedby="price-help" />
+              <label htmlFor="maxPrice">Precio Máximo</label>
+              <InputText inputId="maxPrice" id="maxPrice" aria-describedby="price-help" value={filtersPanel.maxPrice} onChange={handleChange} />
             </div>
           </div>
           <div className="col-12 md:col-6 lg:col-3 ml-auto">
@@ -138,7 +172,7 @@ const PropertyList = () => {
                 icon="pi pi-search"
                 label="Consultar"
                 severity="primary"
-                onClick={clearFilter}
+                onClick={handleSearch}
               />
             </div>
           </div>
@@ -148,6 +182,7 @@ const PropertyList = () => {
                 label="Borrar filtros de búsqueda"
                 icon="pi pi-eraser"
                 severity="help"
+                onClick={clearFiltersPanel}
                 text
               />
             </div>
