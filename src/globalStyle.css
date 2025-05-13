@@ -19,3 +19,19 @@
 .p-card {
     box-shadow: 0 3px 9px #00000029;
 }
+
+ .p-button {
+    color: #ffffff;
+    background: #3f0099;
+    border: 1px solid #3f0099;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
+    border-radius: 3px;
+} 
+
+.p-button.p-button-help, .p-button-group.p-button-help > .p-button, .p-splitbutton.p-button-help > .p-button, .p-fileupload-choose.p-button-help {
+    color: #3f0099;
+    background: #ffffff;
+    border: 1px solid #3f0099;
+}
