@@ -8,8 +8,7 @@ export const fetchPropertiesThunk = createAsyncThunk(
 
 export const fetchFilteredPropertiesThunk = createAsyncThunk(
   'properties/fetchFiltered',
-  async (filters) => {    
-    debugger
+  async (filters) => {        
     const params = new URLSearchParams(filters);
      const data = await fetchPropertiesByFilters(`${params.toString()}`);
      return data;

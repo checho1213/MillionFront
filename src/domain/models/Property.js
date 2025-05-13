@@ -1,9 +1,9 @@
 export class Property {
-  constructor(idOwner, name, address, price, imageUrl) {
+  constructor(idOwner, name, address, price, images) {
     this.idOwner = idOwner
     this.name = name
     this.address = address
     this.price = price
-    this.imageUrl = imageUrl
+    this.images = images
   }
 }

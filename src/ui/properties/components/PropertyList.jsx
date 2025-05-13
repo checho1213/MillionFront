@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchPropertiesThunk, fetchFilteredPropertiesThunk } from "../state/propertySlice";
+import {
+  fetchPropertiesThunk,
+  fetchFilteredPropertiesThunk,
+} from "../state/propertySlice";
 import TitleComponent from "../../../shared/components/panelPrincipal";
 
 import { FilterMatchMode, FilterOperator } from "primereact/api";
@@ -11,7 +14,8 @@ import { IconField } from "primereact/iconfield";
 import { InputIcon } from "primereact/inputicon";
 import { Button } from "primereact/button";
 import { Card } from "primereact/card";
-import { InputNumber } from 'primereact/inputnumber';
+import { Dialog } from "primereact/dialog";
+import { Galleria } from "primereact/galleria";
 
 const PropertyList = () => {
   const dispatch = useDispatch();
@@ -19,18 +23,53 @@ const PropertyList = () => {
   const { items, loading, error } = useSelector((state) => state.properties);
   const [filters, setFilters] = useState(null);
   const [globalFilterValue, setGlobalFilterValue] = useState("");
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     dispatch(fetchPropertiesThunk());
     initFilters();
   }, [dispatch]);
 
-    const [filtersPanel, setFiltersPanel] = useState({
+  const [filtersPanel, setFiltersPanel] = useState({
     owner: "",
     name: "",
     address: "",
     maxPrice: "",
   });
+
+  const [propertyDetails, setPropetyDetails] = useState({
+    owner: "",
+    name: "",
+    address: "",
+    price: "",
+    images: [],
+    idProperty: "",
+  });
+
+  const responsiveOptions = [
+    {
+      breakpoint: "991px",
+      numVisible: 4,
+    },
+    {
+      breakpoint: "767px",
+      numVisible: 3,
+    },
+    {
+      breakpoint: "575px",
+      numVisible: 1,
+    },
+  ];
+
+  const itemTemplate = (item) => {
+    return (
+      <img src={item.file} alt={item.alt} style={{ width: "100%" }} />
+    );
+  };
+
+  const thumbnailTemplate = (item) => {
+    return <img src={item.thumbnailImageSrc} alt={item.alt} />;
+  };
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
@@ -52,7 +91,6 @@ const PropertyList = () => {
     });
     setGlobalFilterValue("");
   };
-  
 
   const balanceBodyTemplate = (rowData) => {
     return formatCurrency(rowData.price);
@@ -67,14 +105,12 @@ const PropertyList = () => {
       : 0;
   };
 
-const handleChange = (e) => {
-    const { id, value } = e.target? e.target : e.value;    
+  const handleChange = (e) => {
+    const { id, value } = e.target ? e.target : e.value;
     setFiltersPanel((prev) => ({ ...prev, [id]: value }));
   };
 
-  
-
-   const handleSearch = () => {
+  const handleSearch = () => {
     dispatch(fetchFilteredProperties(filtersPanel));
   };
 
@@ -88,9 +124,9 @@ const handleChange = (e) => {
     dispatch(fetchFilteredProperties({})); // recarga sin filtros
   };
 
-  const fetchFilteredProperties = async (filters) => {    
-  dispatch(fetchFilteredPropertiesThunk(filters));
-};
+  const fetchFilteredProperties = async (filters) => {
+    dispatch(fetchFilteredPropertiesThunk(filters));
+  };
 
   const clearFilter = () => {
     initFilters();
@@ -123,11 +159,32 @@ const handleChange = (e) => {
     const value = e.target.value;
     let _filters = { ...filters };
     _filters["global"].value = value;
-
     setFilters(_filters);
     setGlobalFilterValue(value);
   };
 
+  const showProperty = (data) => {    
+    setPropetyDetails({
+      name: data.name,
+      owner: data.owner.name,
+      price: data.price,
+      address: data.address,
+      idProperty: data.idProperty,
+      images: data.images
+    });
+    console.log(propertyDetails);
+    setVisible(true);
+  };
+  const openPanel = (rowData) => {
+    return (
+      <Button
+        type="button"
+        icon="pi pi-file-edit"
+        className="p-button-sm p-button-text"
+        onClick={() => showProperty(rowData)}
+      />
+    );
+  };
   const header = renderHeader();
   return (
     <>
@@ -144,25 +201,46 @@ const handleChange = (e) => {
           <div className="col-12 md:col-6 lg:col-3">
             <div className="flex flex-column gap-2 m-2">
               <label htmlFor="owner">Propietario</label>
-              <InputText id="owner" aria-describedby="owner-help" value={filtersPanel.owner} onChange={handleChange} />
+              <InputText
+                id="owner"
+                aria-describedby="owner-help"
+                value={filtersPanel.owner}
+                onChange={handleChange}
+              />
             </div>
           </div>
           <div className="col-12 md:col-6 lg:col-3">
             <div className="flex flex-column gap-2 m-2">
               <label htmlFor="name">Nombre de la propiedad</label>
-              <InputText id="name" aria-describedby="name-help" value={filtersPanel.name} onChange={handleChange} />
+              <InputText
+                id="name"
+                aria-describedby="name-help"
+                value={filtersPanel.name}
+                onChange={handleChange}
+              />
             </div>
           </div>
           <div className="col-12 md:col-6 lg:col-3">
             <div className="flex flex-column gap-2 m-2">
               <label htmlFor="address">Dirección de la propiedad</label>
-              <InputText id="address" aria-describedby="address-help" value={filtersPanel.address} onChange={handleChange} />
+              <InputText
+                id="address"
+                aria-describedby="address-help"
+                value={filtersPanel.address}
+                onChange={handleChange}
+              />
             </div>
           </div>
           <div className="col-12 md:col-6 lg:col-3">
             <div className="flex flex-column gap-2 m-2">
               <label htmlFor="maxPrice">Precio Máximo</label>
-              <InputText inputId="maxPrice" id="maxPrice" aria-describedby="price-help" value={filtersPanel.maxPrice} onChange={handleChange} />
+              <InputText
+                inputId="maxPrice"
+                id="maxPrice"
+                aria-describedby="price-help"
+                value={filtersPanel.maxPrice}
+                onChange={handleChange}
+              />
             </div>
           </div>
           <div className="col-12 md:col-6 lg:col-3 ml-auto">
@@ -235,9 +313,64 @@ const handleChange = (e) => {
               filterPlaceholder="Search by name"
               style={{ minWidth: "12rem" }}
             />
+
+            <Column
+              header="Detalles"
+              body={openPanel}
+              filterPlaceholder="Search by name"
+              style={{ minWidth: "1rem" }}
+            />
           </DataTable>
         </div>
       </Card>
+
+      <Dialog
+        header={`Detalle de la propiedad, id ${propertyDetails.idProperty}`}
+        visible={visible}
+        onHide={() => {
+          if (!visible) return;
+          setVisible(false);
+        }}
+        style={{ width: "50vw" }}
+        breakpoints={{ "960px": "75vw", "641px": "100vw" }}
+      >
+        <div className="surface-100 p-4 border-round mb-4">
+          <div className="grid">
+            <div className="col-12 md:col-6 lg:col-3">
+              <div className="text-500 text-sm mb-1">Propietario</div>
+              <div className="text-900 font-medium">
+                {propertyDetails.owner}
+              </div>
+            </div>
+            <div className="col-12 md:col-6 lg:col-3">
+              <div className="text-500 text-sm mb-1">Nombre</div>
+              <div className="text-900 font-medium">{propertyDetails.name}</div>
+            </div>
+            <div className="col-12 md:col-6 lg:col-3">
+              <div className="text-500 text-sm mb-1">Dirección</div>
+              <div className="text-900 font-medium">
+                {propertyDetails.address}
+              </div>
+            </div>
+            <div className="col-12 md:col-6 lg:col-3">
+              <div className="text-500 text-sm mb-1">Precio</div>
+              <div className="text-900 font-medium">
+                ${propertyDetails.price?.toLocaleString()}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="flex justify-content-center">
+          <Galleria
+            value={propertyDetails.images}
+            responsiveOptions={responsiveOptions}
+            numVisible={5}
+            style={{ maxWidth: "450px" }}
+            item={itemTemplate}
+            thumbnail={thumbnailTemplate}
+          />
+        </div>
+      </Dialog>
     </>
   );
 };
